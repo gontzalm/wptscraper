@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "wptscraper"
 version = "0.1.0"
-description = "World Padel Tour oficial site scraping tool"
+description = "World Padel Tour official site scraping tool"
 authors = ["gontzalm <go.monasterio@gmail.com>"]
 license = "MIT"
 
