@@ -1,24 +1,25 @@
 from httpx import AsyncClient
+from httpx import Response
+from pydantic import BaseModel
 
 from config import Config
-from wptscraper.parsers import PlayerParser
-from wptscraper.parsers import RankingParser
-from wptscraper.schemas import Player
-from wptscraper.schemas import Ranking
+from wptscraper.parsers import Parser
 
 
-class WptScraper:
+class Scraper:
     BASE_URL = Config.BASE_URL
 
-    def __init__(self) -> None:
-        self._session = AsyncClient(base_url=self.BASE_URL)
+    def __init__(self, endpoint) -> None:
+        self._client = AsyncClient(base_url=self.BASE_URL)
+        self._endpoint = endpoint
 
-    async def get_ranking(self) -> Ranking:
-        r = await self._session.get("/ranking")
-        parser = RankingParser(r)
-        return parser.parse()
+    async def close(self):
+        await self._client.aclose()
 
-    async def get_player(self, name) -> Player:
-        r = await self._session.get(f"/players/{name}")
-        parser = PlayerParser(r)
+    async def _get(self) -> Response:
+        target = "form_url_with_kwargs" + self._endpoint
+        return await self._client.get(target)
+
+    async def scrape(self, parser: Parser) -> BaseModel:
+        parser.response = await self._get()
         return parser.parse()

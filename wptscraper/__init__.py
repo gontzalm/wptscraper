@@ -1,3 +1,3 @@
-from scraper import WptScraper
+from wptscraper import WptScraper
 
 __all__ = ["WptScraper"]

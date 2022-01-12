@@ -12,7 +12,7 @@ from wptscraper.schemas import RankingEntry
 
 class Parser(ABC):
     def __init__(self, response: Response) -> None:
-        self._response = response
+        self.response = response
 
     @abstractmethod
     def parse(self) -> BaseModel:

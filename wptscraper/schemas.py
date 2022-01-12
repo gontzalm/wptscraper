@@ -14,3 +14,4 @@ class RankingEntry(BaseModel):
 
 class Ranking(BaseModel):
     ranking: list[RankingEntry]
+    yearweek: tuple[int, int]
