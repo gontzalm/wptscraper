@@ -1,3 +1,5 @@
+from datetime import date
+
 from pydantic import BaseModel
 
 
@@ -14,4 +16,5 @@ class RankingEntry(BaseModel):
 
 class Ranking(BaseModel):
     ranking: list[RankingEntry]
-    yearweek: tuple[int, int]
+    year: int = date.today().isocalendar().year
+    week: int = date.today().isocalendar().week
