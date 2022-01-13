@@ -2,10 +2,14 @@ from datetime import date
 
 from pydantic import BaseModel
 
+from wptscraper.helpers import Gender
+
 
 class Player(BaseModel):
     first_name: str
     last_name: str
+    gender: Gender
+    image: str
 
 
 class RankingEntry(BaseModel):
@@ -15,6 +19,12 @@ class RankingEntry(BaseModel):
 
 
 class Ranking(BaseModel):
-    ranking: list[RankingEntry]
+    positions: list[RankingEntry]
     year: int = date.today().isocalendar().year
     week: int = date.today().isocalendar().week
+
+
+class PlayerStats(BaseModel):
+    # TODO
+    player: Player
+    more: list
