@@ -7,7 +7,6 @@ from bs4.element import Tag
 from pydantic import BaseModel
 
 from wptscraper import schemas
-from wptscraper.exceptions import ParsingError
 from wptscraper.helpers import Gender
 
 
@@ -24,16 +23,12 @@ class Parser(ABC):
         if source is None:
             source = self._soup
 
-        if tag_attr is None:
-            try:
-                return source.select_one(selector).text  # type: ignore
-            except AttributeError:
-                raise ParsingError(type(self))
+        tag = source.select_one(selector)
 
-        try:
-            return source.select_one(selector)[tag_attr]  # type: ignore
-        except KeyError:
-            raise ParsingError(type(self))
+        if tag_attr is None:
+            return tag.text  # type: ignore
+
+        return tag[tag_attr]  # type: ignore
 
     @abstractmethod
     def parse(self) -> BaseModel:
@@ -65,7 +60,6 @@ class RankingParser(Parser):
             .replace(")", "")
             .strip()
         )
-
         return schemas.Player(
             first_name=full_name.group(1),  # type: ignore
             last_name=full_name.group(2),  # type: ignore
