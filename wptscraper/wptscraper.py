@@ -12,17 +12,17 @@ logger = logging.getLogger(__name__)
 class WptScraper:
     async def get_ranking(self) -> schemas.Ranking:
         logger.info("Getting WPT ranking")
-        ranking = await self.ResourceGetter(scrapers.RankingScraper()).get()
+        ranking = await self._ResourceGetter(scrapers.RankingScraper()).get()
         logger.info("Successfuly got WPT ranking")
         return ranking  # type: ignore
 
     async def get_player_stats(self, name: str) -> schemas.Player:
         logger.info("Getting %s's current stats", prettify(name))
-        player = await self.ResourceGetter(scrapers.PlayerStatsScraper(name)).get()
+        player = await self._ResourceGetter(scrapers.PlayerStatsScraper(name)).get()
         logger.info("Successfuly got %s's current stats", prettify(name))
         return player  # type: ignore
 
-    class ResourceGetter:
+    class _ResourceGetter:
         def __init__(self, scraper: scrapers.Scraper) -> None:
             self._scraper = scraper  # type: ignore
 

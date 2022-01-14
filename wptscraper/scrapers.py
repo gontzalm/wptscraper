@@ -41,7 +41,7 @@ class Scraper(ABC):
         soup = await self._get_soup()
         return self._PARSER(soup).parse()  # type: ignore
 
-    class Endpoint:
+    class _Endpoint:
         def __init__(
             self, base_endpoint: str, path_params: dict[str, str] | None = None
         ) -> None:
@@ -64,7 +64,7 @@ class RankingScraper(Scraper):
 
     def __init__(self) -> None:
         super().__init__()
-        self._endpoint = self.Endpoint(EndpointsConfig.RANKING)
+        self._endpoint = self._Endpoint(EndpointsConfig.RANKING)
 
 
 class PlayerStatsScraper(Scraper):
@@ -72,4 +72,4 @@ class PlayerStatsScraper(Scraper):
 
     def __init__(self, name: str) -> None:
         super().__init__()
-        self._endpoint = self.Endpoint(EndpointsConfig.PLAYER_STATS, {"name": name})  # type: ignore
+        self._endpoint = self._Endpoint(EndpointsConfig.PLAYER_STATS, {"name": name})  # type: ignore
