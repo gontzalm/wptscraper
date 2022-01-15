@@ -14,21 +14,19 @@ class Parser(ABC):
     def __init__(self, soup: BeautifulSoup):
         self._soup = soup
 
+    def _extract_tags(self, selector: str) -> list[Tag]:
+        return self._soup.select(selector)
+
     def _extract_data(
         self,
+        tag: Tag,
         selector: str,
-        source: Tag | None = None,
         tag_attr: str | None = None,
     ) -> str:
-        if source is None:
-            source = self._soup
-
-        tag = source.select_one(selector)
-
+        target_tag = tag.select_one(selector)
         if tag_attr is None:
-            return tag.text  # type: ignore
-
-        return tag[tag_attr]  # type: ignore
+            return target_tag.text  # type: ignore
+        return target_tag[tag_attr]  # type: ignore
 
     @abstractmethod
     def parse(self) -> BaseModel:
@@ -45,17 +43,17 @@ class RankingParser(Parser):
 
     def _parse_position(self, entry: tuple[int, Tag]) -> int:
         _, tag = entry
-        position = self._extract_data(self._POSITION_SELECTOR, tag)
+        position = self._extract_data(tag, self._POSITION_SELECTOR)
         return int(position)
 
     def _parse_player(self, entry: tuple[int, Tag]) -> schemas.Player:
         i, tag = entry
-        full_name = self._extract_data(self._NAME_SELECTOR, tag)
+        full_name = self._extract_data(tag, self._NAME_SELECTOR)
         print(full_name)
         full_name = self._NAME_REGEX.match(full_name)
         gender = Gender.MALE if i < 10 else Gender.FEMALE
         image = (
-            self._extract_data(self._IMAGE_SELECTOR, tag, "style")
+            self._extract_data(tag, self._IMAGE_SELECTOR, "style")
             .split("(")[-1]
             .replace(")", "")
             .strip()
@@ -69,7 +67,7 @@ class RankingParser(Parser):
 
     def _parse_points(self, entry: tuple[int, Tag]) -> int:
         _, tag = entry
-        points = self._extract_data(self._POINTS_SELECTOR, tag)
+        points = self._extract_data(tag, self._POINTS_SELECTOR)
         return int(points)
 
     def _parse_entry(self, entry: tuple[int, Tag]) -> schemas.RankingEntry:
@@ -80,7 +78,7 @@ class RankingParser(Parser):
         )
 
     def parse(self) -> schemas.Ranking:
-        ranking = self._soup.select(self._RANKING_SELECTOR)
+        ranking = self._extract_tags(self._RANKING_SELECTOR)
         return schemas.Ranking(
             positions=[self._parse_entry(e) for e in enumerate(ranking)]
         )
