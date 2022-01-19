@@ -14,14 +14,14 @@ from wptscraper import parsers
 class Scraper(ABC):
     _BASE_URL = HttpClientConfig.BASE_URL
     _HEADERS = HttpClientConfig.HEADERS
-    _PARSER = NotImplemented
+    _PARSER: parsers.Parser = NotImplemented
 
     def __init__(self) -> None:
         self._client = AsyncClient(
             base_url=self._BASE_URL,
             headers=self._HEADERS,
         )
-        self._endpoint = NotImplemented
+        self._endpoint: self._Endpoint = NotImplemented  # type: ignore
 
     async def __aenter__(self) -> Scraper:
         return self
@@ -43,7 +43,9 @@ class Scraper(ABC):
 
     class _Endpoint:
         def __init__(
-            self, base_endpoint: str, path_params: dict[str, str] | None = None
+            self,
+            base_endpoint: str,
+            path_params: dict[str, str] | None = None,
         ) -> None:
             self._base_endpoint = base_endpoint
             self._path_params = path_params
