@@ -39,7 +39,7 @@ class RankingParser(Parser):
     _NAME_SELECTOR = "div.c-player-card__name"
     _IMAGE_SELECTOR = "div.c-player-card__img"
     _POINTS_SELECTOR = "div.c-player-card__score"
-    _NAME_REGEX = re.compile(r"([A-Z][^A-Z]+)([A-Z][^A-Z]+)")
+    _NAME_REGEX = re.compile(r"([A-Z][^A-Z]+)([A-Z][^A-Z]+)([A-Z][^A-Z]+)?")
 
     def _parse_position(self, entry: tuple[int, Tag]) -> int:
         _, tag = entry
@@ -49,8 +49,9 @@ class RankingParser(Parser):
     def _parse_player(self, entry: tuple[int, Tag]) -> schemas.Player:
         i, tag = entry
         full_name = self._extract_data(tag, self._NAME_SELECTOR)
-        print(full_name)
         full_name = self._NAME_REGEX.match(full_name)
+        first_name, second_name = full_name.group(1), full_name.group(2)  # type: ignore
+        third_name = full_name.group(3)  # type: ignore
         gender = Gender.MALE if i < 10 else Gender.FEMALE
         image = (
             self._extract_data(tag, self._IMAGE_SELECTOR, "style")
@@ -59,8 +60,9 @@ class RankingParser(Parser):
             .strip()
         )
         return schemas.Player(
-            first_name=full_name.group(1),  # type: ignore
-            last_name=full_name.group(2),  # type: ignore
+            first_name=first_name,
+            second_name=second_name,
+            third_name=third_name,
             gender=gender,
             image=image,
         )

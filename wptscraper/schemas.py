@@ -7,7 +7,8 @@ from wptscraper.helpers import Gender
 
 class Player(BaseModel):
     first_name: str
-    last_name: str
+    second_name: str
+    third_name: str | None
     gender: Gender
     image: str
 

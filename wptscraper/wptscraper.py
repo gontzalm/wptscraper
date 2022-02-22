@@ -16,7 +16,7 @@ class WptScraper:
         logger.info("Successfuly got WPT ranking")
         return ranking  # type: ignore
 
-    async def get_player_stats(self, name: str) -> schemas.Player:
+    async def get_player_stats(self, name: str) -> schemas.PlayerStats:
         logger.info("Getting %s's current stats", prettify(name))
         player = await self._ResourceGetter(scrapers.PlayerStatsScraper(name)).get()
         logger.info("Successfuly got %s's current stats", prettify(name))

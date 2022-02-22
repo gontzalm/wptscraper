@@ -54,11 +54,12 @@ class Scraper(ABC):
             if self._path_params is None:
                 return self._base_endpoint
 
+            formed = self._base_endpoint
             for param, value in self._path_params.items():
                 if param not in self._base_endpoint:
                     raise ValueError(f"Param '{param}' not found in endpoint")
-                self._base_endpoint.replace(f"<{param}>", value)
-            return self._base_endpoint
+                formed = formed.replace(f"<{param}>", value)
+            return formed
 
 
 class RankingScraper(Scraper):
@@ -74,4 +75,7 @@ class PlayerStatsScraper(Scraper):
 
     def __init__(self, name: str) -> None:
         super().__init__()
-        self._endpoint = self._Endpoint(EndpointsConfig.PLAYER_STATS, {"name": name})  # type: ignore
+        self._endpoint = self._Endpoint(
+            EndpointsConfig.PLAYER_STATS,
+            path_params={"name": name},
+        )  # type: ignore
